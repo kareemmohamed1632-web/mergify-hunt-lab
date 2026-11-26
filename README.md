@@ -1,4 +1,4 @@
-# mergify-hunt-lab
+# mergify-hunt-lab (pr1 edit)
 phase0 bug-hunt fixture mergify-hunt-lab
 
 ## Fixture notes
