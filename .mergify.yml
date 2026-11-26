@@ -1,0 +1,6 @@
+queue_rules:
+  - name: default
+    queue_conditions:
+      - check-success=build
+    merge_conditions:
+      - check-success=build
