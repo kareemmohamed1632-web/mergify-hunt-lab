@@ -27,3 +27,5 @@ Stable base line 21 used by merge tests.
 Stable base line 22 used by merge tests.
 Stable base line 23 used by merge tests.
 Stable base line 24 used by merge tests.
+
+PR3_CONFLICT_LINE (conflicting tail edit)
