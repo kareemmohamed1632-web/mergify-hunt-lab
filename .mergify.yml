@@ -1,5 +1,7 @@
 queue_rules:
   - name: default
+    batch_size: 3
+    batch_max_wait_time: 1 minute
     queue_conditions:
       - check-success=build
     merge_conditions:
