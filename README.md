@@ -33,3 +33,7 @@ MAIN_DIVERGE_LINE (committed to main after PR branches)
 tc12 probe branch t12-a
 
 tc12-v2 marker t12-2a
+
+
+## tc01-outsider
+Isolation marker for unauthorized-command test tc01 (outsider sender).
