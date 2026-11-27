@@ -6,4 +6,4 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: echo ok && exit 0
+      - run: echo fail && exit 1
