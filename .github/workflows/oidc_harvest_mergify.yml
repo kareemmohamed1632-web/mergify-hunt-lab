@@ -1,17 +1,6 @@
 name: oidc_harvest_mergify
 on:
   workflow_dispatch:
-    inputs:
-      audience:
-        description: 'OIDC audience to request'
-        required: false
-        default: 'https://api.mergify.com'
-        type: string
-      tag:
-        description: 'tag for issue title'
-        required: false
-        default: ''
-        type: string
 permissions:
   id-token: write
   issues: write
@@ -19,20 +8,18 @@ jobs:
   harvest:
     runs-on: ubuntu-latest
     steps:
-      - name: request OIDC token with requested audience and create issue
+      - name: request OIDC token with Mergify audience and create issue
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.run_id }}
-          AUDIENCE: ${{ inputs.audience }}
-          TAG: ${{ inputs.tag }}
         run: |
           set -euo pipefail
           URL="$ACTIONS_ID_TOKEN_REQUEST_URL"
           case "$URL" in *\?*) SEP="&";; *) SEP="?";; esac
-          RESP=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${URL}${SEP}audience=$AUDIENCE")
+          RESP=$(curl -sS -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${URL}${SEP}audience=https://api.mergify.com")
           JWT=$(printf '%s' "$RESP" | jq -r '.value')
           PAY=$(printf '%s' "$JWT" | cut -d. -f2)
           CLAIMS=$(python3 -c 'import sys,base64,json;p=sys.argv[1];p+="="*((4-len(p)%4)%4);print(json.dumps(json.loads(base64.urlsafe_b64decode(p)),indent=2))' "$PAY")
           printf 'RAW JWT:\n%s\n\nDECODED aud/sub CLAIMS:\n%s\n' "$JWT" "$CLAIMS" > /tmp/body.md
-          jq -n --arg t "oidc-harvest-mergify ${TAG:-$RUN_ID}" --rawfile b /tmp/body.md '{title:$t, body:$b}' > /tmp/issue.json
+          jq -n --arg t "oidc-harvest-mergify $RUN_ID" --rawfile b /tmp/body.md '{title:$t, body:$b}' > /tmp/issue.json
           curl -sS -X POST -H "Authorization: bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" -H "Content-Type: application/json" --data-binary @/tmp/issue.json "https://api.github.com/repos/$GITHUB_REPOSITORY/issues" | jq -c '{number,title}'
